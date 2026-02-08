@@ -33,6 +33,12 @@
             max-width: 400px;
             border: 2px solid white;
             transition: transform 0.3s ease;
+            position: relative;
+            min-height: 400px; /* Fixed height to keep No button inside */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         h1 {
@@ -44,7 +50,13 @@
 
         p { color: #555; font-size: 1.1rem; margin-bottom: 30px; }
 
-        .btn-group { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+        .btn-group { 
+            display: flex; 
+            justify-content: center; 
+            gap: 15px; 
+            margin-top: 20px; 
+            width: 100%;
+        }
 
         button {
             padding: 12px 30px;
@@ -55,12 +67,19 @@
             font-family: 'Poppins', sans-serif;
             font-weight: 600;
             transition: all 0.3s ease;
+            z-index: 10;
         }
 
         .primary-btn { background: #ff4d6d; color: white; box-shadow: 0 5px 15px rgba(255, 77, 109, 0.3); }
         .primary-btn:hover { transform: scale(1.05); background: #ff2a52; }
         
-        .secondary-btn { background: white; color: #ff4d6d; border: 2px solid #ff4d6d; }
+        /* The Sassy No Button */
+        .secondary-btn { 
+            background: white; 
+            color: #ff4d6d; 
+            border: 2px solid #ff4d6d; 
+            position: relative; 
+        }
 
         /* Grid for Options */
         .options-grid {
@@ -68,6 +87,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 15px;
             margin-top: 20px;
+            width: 100%;
         }
 
         .option-card {
@@ -80,11 +100,11 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
-        .option-card:hover { transform: translateY(-3px); border-color: #ff9a9e; }
+        .option-card:hover { transform: translateY(-3px); border-color: #ff9a9e; background: #fff0f3; }
         .option-card span { font-size: 2rem; display: block; margin-bottom: 5px; }
 
         /* Hidden Sections */
-        .hidden { display: none; }
+        .hidden { display: none !important; }
 
         /* Floating Hearts Animation */
         .bg-heart {
@@ -116,25 +136,26 @@
     </div>
 
     <div class="card hidden" id="step2">
-        <h1>Yay! Now pick a date:</h1>
+        <h1>When we meet next... 💭</h1>
+        <p>What should we do?</p>
         <div class="options-grid">
-            <div class="option-card" onclick="selectActivity('Movie Night 🎬')">
+            <div class="option-card" onclick="selectActivity('Movie Marathon 🎬')">
                 <span>🎬</span>Movie
             </div>
-            <div class="option-card" onclick="selectActivity('Fancy Dinner 🕯️')">
+            <div class="option-card" onclick="selectActivity('Romantic Dinner 🕯️')">
                 <span>🕯️</span>Dinner
             </div>
             <div class="option-card" onclick="selectActivity('Long Drive 🚗')">
                 <span>🚗</span>Drive
             </div>
-            <div class="option-card" onclick="selectActivity('Arcade Games 👾')">
-                <span>👾</span>Arcade
+            <div class="option-card" onclick="selectActivity('Just Chilling 🏠')">
+                <span>🏠</span>Chill
             </div>
         </div>
     </div>
 
     <div class="card hidden" id="step3">
-        <h1>And the food? 😋</h1>
+        <h1>And what are we eating? 😋</h1>
         <div class="options-grid">
             <div class="option-card" onclick="selectFood('Pizza 🍕')">
                 <span>🍕</span>Pizza
@@ -145,7 +166,7 @@
             <div class="option-card" onclick="selectFood('Street Food 🍛')">
                 <span>🍛</span>Desi
             </div>
-            <div class="option-card" onclick="selectFood('Dessert First 🍦')">
+            <div class="option-card" onclick="selectFood('Dessert Only 🍦')">
                 <span>🍦</span>Sweet
             </div>
         </div>
@@ -153,10 +174,10 @@
 
     <div class="card hidden" id="step4">
         <img src="https://media.giphy.com/media/26BRv0ThflsHCqDrG/giphy.gif" style="width: 100%; border-radius: 15px; margin-bottom: 15px;">
-        <h1>It's a Date! ❤️</h1>
-        <p id="result-text">We are going for <b>...</b> and eating <b>...</b>!</p>
+        <h1>It's a Promise! 🤞</h1>
+        <p id="result-text">Plan for next meet:<br><b>...</b> and <b>...</b>!</p>
         
-        <button class="primary-btn" onclick="sendWhatsapp()">Send Invite 💌</button>
+        <button class="primary-btn" onclick="celebrate()">Can't Wait! 💖</button>
     </div>
 
     <script>
@@ -169,7 +190,7 @@
             document.querySelectorAll('.card').forEach(c => c.classList.add('hidden'));
             document.getElementById('step' + step).classList.remove('hidden');
             
-            // If it's the final step, launch confetti!
+            // If it's the final step, launch initial confetti
             if (step === 4) {
                 confetti({
                     particleCount: 150,
@@ -187,17 +208,65 @@
 
         function selectFood(choice) {
             foodChoice = choice;
-            document.getElementById('result-text').innerHTML = `We are going for <b>${dateChoice}</b> and eating <b>${foodChoice}</b>!`;
+            document.getElementById('result-text').innerHTML = `The plan for our next meet:<br>We are going for <b>${dateChoice}</b> and eating <b>${foodChoice}</b>!`;
             nextStep(4);
         }
 
-        // WhatsApp Integration (The Pro Move)
-        function sendWhatsapp() {
-            let phoneNumber = "919876543210"; // REPLACE WITH YOUR NUMBER (Don't forget country code 91)
+        // Final Button Celebration
+        function celebrate() {
+            // More confetti!
+            const duration = 3000;
+            const end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#ff4d6d', '#ff9a9e', '#ffffff']
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#ff4d6d', '#ff9a9e', '#ffffff']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
             
-            let message = `Hey! I said YES! ❤️%0A%0AOur Date Plan:%0A📍 Activity: ${dateChoice}%0A🍽️ Food: ${foodChoice}%0A%0ASee you on the 14th! 🥰`;
-            
-            window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+            alert("Screenshot this so you don't forget! ❤️");
+        }
+
+        // Sassy No Button Logic
+        const noBtn = document.getElementById('noBtn');
+        const phrases = ["No", "Are you sure?", "Really?", "Think again!", "Last chance!", "Pretty please?", "Don't do this!", "🥺"];
+        let phraseIndex = 0;
+
+        function moveNoButton() {
+            const card = document.querySelector('.card:not(.hidden)'); // Get current visible card
+            const cardRect = card.getBoundingClientRect();
+            const btnRect = noBtn.getBoundingClientRect();
+
+            // Calculate Random Position WITHIN the card
+            // We subtract button size and padding to keep it inside
+            const maxX = cardRect.width - btnRect.width - 40; 
+            const maxY = cardRect.height - btnRect.height - 40;
+
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+
+            noBtn.style.position = 'absolute';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+
+            // Change Text
+            phraseIndex = (phraseIndex + 1) % phrases.length;
+            noBtn.innerText = phrases[phraseIndex];
         }
 
         // Background Hearts
@@ -214,16 +283,6 @@
             }
         }
         createHearts();
-
-        // No Button Logic (Run away)
-        const noBtn = document.getElementById('noBtn');
-        function moveNoButton() {
-            const x = Math.random() * (window.innerWidth - 100);
-            const y = Math.random() * (window.innerHeight - 100);
-            noBtn.style.position = 'absolute';
-            noBtn.style.left = x + 'px';
-            noBtn.style.top = y + 'px';
-        }
     </script>
 </body>
 </html>
